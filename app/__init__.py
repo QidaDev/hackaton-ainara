@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 
+from app.config import Config
 from app.db_connection import get_db
 
 
@@ -20,7 +21,7 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
     global db_client
-    db_client = get_db(app.config["mongo_connection_string"])
+    db_client = get_db(Config.mongo_connection_string)
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)
 
