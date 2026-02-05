@@ -20,14 +20,15 @@ def create_app(test_config=None):
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
-    global db_client
+    
+    import app.db_connection as db_connection
     db_client = get_db(Config.mongo_connection_string)
+    db_connection.db = db_client["hackaton"]
+
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)
 
-    # a simple page that says hello
-    @app.route("/hello")
-    def hello():
-        return "Hello, World!"
+    from app.routes import api_bp
+    app.register_blueprint(api_bp)
 
     return app

@@ -1,4 +1,4 @@
-#!/Users/tomasamate/Documents/projects/hackaton-ainara/.venv/bin/python3.12
+#!/Users/fran.perez_qida/dev/qida/hackaton-ainara/.venv/bin/python
 import sys
 from pip._internal.cli.main import main
 if __name__ == '__main__':
