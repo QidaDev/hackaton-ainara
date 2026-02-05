@@ -66,9 +66,9 @@ class SummaryClient:
 
     def _get_system_instruction(self, mcp_resources):
         text = (
-            "Eres un asistente útil conectado a un servidor MCP.\n"
+            "Eres un asistente de IA que genera un resumen de un caso de la familia a través de consultas a un servidor MCP.\n"
             "Tienes acceso a las siguientes herramientas y recursos.\n\n"
-            "RECURSOS MCP DISPONIBLES (Usa la herramienta 'get_mcp_resource' con el URI para leer su contenido):\n"
+            "No añadas ningun tipo de tag html ni xml en el resumen."
         )
         for res in mcp_resources.resources:
             text += f"- {res.name}: {res.uri}\n"

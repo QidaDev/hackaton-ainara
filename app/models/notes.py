@@ -1,8 +1,8 @@
 """Pydantic model for notes."""
 
-from token import OP
 from typing import Optional
 
+from uuid import uuid4
 from pydantic import Field
 
 from app.models.base import MongoModel
@@ -16,5 +16,5 @@ class Note(MongoModel):
 
     def save(self) -> "Note":
         """Persist to the notes collection."""
-        self.note_id = str(uuid.uuid4())
+        self.note_id = str(uuid4())
         return super().save("notes")
