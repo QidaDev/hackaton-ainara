@@ -2,6 +2,15 @@
 
 Base URL: `http://localhost:5000/api` (adjust host/port if your app runs elsewhere)
 
+**Response codes**
+
+- **200** – GET success (list of resources in body)
+- **201** – POST success (created resource in body)
+- **204** – GET success but no resources found (empty body)
+- **400** – Bad request (e.g. missing `case_id` or required body fields)
+
+To see the HTTP status code in the terminal: add `-w "\nHTTP %{http_code}\n"` to any `curl` command.
+
 ---
 
 ## Notes
@@ -11,8 +20,10 @@ Base URL: `http://localhost:5000/api` (adjust host/port if your app runs elsewhe
 
 ### GET notes by case_id
 
+Returns **200** with a JSON array when there are notes, **204** (no body) when there are none.
+
 ```bash
-curl -X GET "http://localhost:5000/api/notes?case_id=CASE-001"
+curl -s -w "\nHTTP %{http_code}\n" -X GET "http://localhost:5000/api/notes?case_id=CASE-001"
 ```
 
 ### POST notes (create)
@@ -88,8 +99,10 @@ curl -X POST "http://localhost:5000/api/notes" \
 
 ### GET calls by case_id
 
+Returns **200** with a JSON array when there are calls, **204** (no body) when there are none.
+
 ```bash
-curl -X GET "http://localhost:5000/api/calls?case_id=CASE-001"
+curl -s -w "\nHTTP %{http_code}\n" -X GET "http://localhost:5000/api/calls?case_id=CASE-001"
 ```
 
 ### POST calls (create)
@@ -162,8 +175,10 @@ curl -X POST "http://localhost:5000/api/calls" \
 
 ### GET WhatsApp chats by case_id
 
+Returns **200** with a JSON array when there are messages, **204** (no body) when there are none.
+
 ```bash
-curl -X GET "http://localhost:5000/api/whatsapp-chats?case_id=CASE-001"
+curl -s -w "\nHTTP %{http_code}\n" -X GET "http://localhost:5000/api/whatsapp-chats?case_id=CASE-001"
 ```
 
 ### POST WhatsApp chats (create)
@@ -235,18 +250,24 @@ curl -X POST "http://localhost:5000/api/whatsapp-chats" \
 
 ---
 
-## Error examples
+## Error and edge-case examples
 
 **GET without case_id (400)**
 
 ```bash
-curl -X GET "http://localhost:5000/api/notes"
+curl -s -w "\nHTTP %{http_code}\n" -X GET "http://localhost:5000/api/notes"
+```
+
+**GET with case_id but no data (204)**
+
+```bash
+curl -s -w "\nHTTP %{http_code}\n" -X GET "http://localhost:5000/api/notes?case_id=NONEXISTENT-CASE"
 ```
 
 **POST note with missing required field (400)**
 
 ```bash
-curl -X POST "http://localhost:5000/api/notes" \
+curl -s -w "\nHTTP %{http_code}\n" -X POST "http://localhost:5000/api/notes" \
   -H "Content-Type: application/json" \
   -d '{"case_id": "CASE-001", "text": "Missing date"}'
 ```

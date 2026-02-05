@@ -26,8 +26,8 @@ def save_note(data: dict):
 
 
 def get_notes_by_case_id(case_id: str):
-    """Return list of notes for the given case_id (JSON-safe dicts)."""
-    cursor = db["notes"].find({"case_id": case_id})
+    """Return list of notes for the given case_id (JSON-safe dicts), newest first."""
+    cursor = db["notes"].find({"case_id": case_id}).sort("date", -1)
     return [_to_json_safe(doc) for doc in cursor]
 
 
@@ -39,10 +39,8 @@ def save_call(data: dict):
 
 
 def get_calls_by_case_id(case_id: str):
-    """Return list of calls for the given case_id (JSON-safe dicts)."""
-    cursor = db["calls"].find({"case_id": case_id})
-    print(cursor)
-    print([_to_json_safe(doc) for doc in cursor])
+    """Return list of calls for the given case_id (JSON-safe dicts), newest first."""
+    cursor = db["calls"].find({"case_id": case_id}).sort("date", -1)
     return [_to_json_safe(doc) for doc in cursor]
 
 
@@ -54,6 +52,6 @@ def save_message(data: dict):
 
 
 def get_messages_by_case_id(case_id: str):
-    """Return list of WhatsApp messages for the given case_id (JSON-safe dicts)."""
-    cursor = db["whatsapp_chats"].find({"case_id": case_id})
+    """Return list of WhatsApp messages for the given case_id (JSON-safe dicts), newest first."""
+    cursor = db["whatsapp_chats"].find({"case_id": case_id}).sort("date", -1)
     return [_to_json_safe(doc) for doc in cursor]

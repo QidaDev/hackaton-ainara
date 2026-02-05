@@ -14,6 +14,9 @@ class MongoModel(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     id: Optional[str] = Field(None, alias="_id", description="MongoDB document id")
+    case_id: str = Field(..., description="The ID of the case")
+    date: str = Field(..., description="The date of the document")
+    text: str = Field(..., description="The text of the document")
 
     def save(self, collection_name: str) -> "MongoModel":
         """Save or update the document in the specified collection."""
