@@ -1,0 +1,11 @@
+services:
+  ainara:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=flaskr
+      - FLASK_ENV=development
+    volumes:
+      - .:/app
+    command: flask run --host=0.0.0.0 --port=5000
