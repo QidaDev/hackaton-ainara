@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 from pymongo import MongoClient
 
 # 1. Conexión (usando las credenciales de tu Docker)
-client = MongoClient[Any]("mongodb://admin:secretpassword@mongodb   :27017/")
+client = MongoClient[Any]("mongodb://admin:secretpassword@mongodb:27017/")
 db = client['ainara-db']
 notes_collection = db['notes']
 whatsapp_messages_collection = db['whatsapp_messages']
@@ -86,18 +86,19 @@ def generate_case_summary(case_id: str) -> str:
         phone_call_transcriptions_string: str = ""
     
         string_return: str = ""
+        logger.debug(f"🔍 NOTES LIST: {repr(notes_list)} (type: {type(notes_list)})")
+        logger.debug(f"🔍 WHATSAPP MESSAGES LIST: {repr(whatsapp_messages_list)} (type: {type(whatsapp_messages_list)})")
+        logger.debug(f"🔍 PHONE CALL TRANSCRIPTIONS LIST: {repr(phone_call_transcriptions_list)} (type: {type(phone_call_transcriptions_list)})")
+        
         for note in notes_list:
-            logger.debug(f"🔍 note: {repr(note)} (type: {type(note)})")
             # string_list.append(str(note))
             string_return += "Nota: " + str(note) + "\n"
             logger.debug(f"🔍 NOTES: string_return: {repr(string_return)})")
         for whatsapp_message in whatsapp_messages_list:
-            logger.debug(f"🔍 whatsapp_message: {repr(whatsapp_message)} (type: {type(whatsapp_message)})")
             # string_list.append(str(whatsapp_message))
             string_return += "Whatsapp Message: " + str(whatsapp_message) + "\n"
             logger.debug(f"🔍 WHATSAPP MESSAGES: string_return: {repr(string_return)})")
         for phone_call_transcription in phone_call_transcriptions_list:
-            logger.debug(f"🔍 phone_call_transcription: {repr(phone_call_transcription)} (type: {type(phone_call_transcription)})")
             # string_list.append(str(phone_call_transcription))
             string_return += "Phone Call Transcription: " + str(phone_call_transcription) + "\n"
             logger.debug(f"🔍 PHONE CALL TRANSCRIPTIONS: string_return: {repr(string_return)})")

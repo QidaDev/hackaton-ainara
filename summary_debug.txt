@@ -1,17 +1,20 @@
+WhatsApp Messages: {'_id': ObjectId('6984c744664927e0e033ad87'), 'case_id': 'ABC-123', 'date': '2026-01-22', 'text': 'Laura: Hola Alba, te llamé el otro día pero no me cogiste. Me preocupa mucho el tema de mi madre. Cada vez se olvida de más cosas y hoy ha salido a la calle sin abrigo.;\nAlba: Hola Laura, perdona que no pudiera atenderte el otro día. Me alegro de que me escribas. Entiendo tu preocupación, es una situación complicada pero juntas vamos a encontrar la mejor solución para tu madre. ¿Tienes disponibilidad mañana para que hablemos con más calma?;\nLaura: Sí, mañana mejor. Por la mañana si puedes, es cuando puedo atenderte con más tranquilidad. Me vendría genial que me orientaras.;\nAlba: Perfecto, mañana a las 11am te llamo. Juntas encontraremos la mejor manera de cuidar a tu madre sin que tú tengas que agobiarte. Descansa un poco esta tarde.;\nLaura: Gracias Alba, de verdad. Nos hablamos mañana.;\nAlba: Un abrazo Laura, hasta mañana.'}
+
+Notes: {'_id': ObjectId('6984c744664927e0e033ad86'), 'case_id': 'ABC-123', 'date': '2026-01-18', 'text': 'La hija de Carmen, Laura, acude a nuestra oficina preocupada por el estado de salud de su madre. Cuenta que desde hace meses Carmen está presentando episodios de desorientación, olvidos y despistes cada vez más frecuentes. Llegó a salir a la calle sin estar vestida adecuadamente. Laura trabaja fuera de casa y le resulta muy complicado estar pendiente de su madre todo el día. Acordamos una primera llamada para analizar la situación y valorar los apoyos que pueden necesitar.'}, {'_id': ObjectId('6984c744664927e0e033ad85'), 'case_id': 'ABC-123', 'date': '2026-01-28', 'text': 'He mantenido una conversación telefónica con Laura, la hija de Carmen. Me ha explicado con más detalle la situación de su madre, que presenta episodios frecuentes de desorientación y olvidos, lo que le impide desenvolverse con seguridad. Hemos analizado diferentes opciones de apoyo para que Carmen pueda permanecer en su hogar de forma segura, sin que suponga una sobrecarga excesiva para Laura. Le he propuesto un servicio de cuidadora a domicilio que se adaptaría bien a sus necesidades. Laura lo ha visto como una buena solución y me ha pedido que le prepare una propuesta concreta para valorarla mañana.'}
+
+
 Resumen del caso:
 
-Sra. Carmen, de 82 años, presenta principio de demencia con desorientación ocasional, movilidad reducida y riesgo de caídas. Es viuda desde hace 4 años, lo que ha aumentado su ansiedad y sensación de soledad.
+Notas:
+El 18 de enero, la hija de Carmen, Laura, acudió a la oficina preocupada por el estado de salud de su madre. Carmen, de 82 años, está presentando desde hace meses episodios de desorientación, olvidos y despistes cada vez más frecuentes, incluyendo llegar a salir a la calle sin estar vestida adecuadamente. Laura trabaja fuera de casa y le resulta muy complicado estar pendiente de su madre todo el día. Se acordó una primera llamada para analizar la situación y valorar los apoyos que pueden necesitar.
 
-Su hija Laura es su principal cuidadora, pero trabaja a jornada completa y se siente desbordada. La rutina de Carmen se basa en levantarse tarde, desayunar poco y ver telenovelas, presentando mayor nerviosismo por las tardes, posiblemente por sundowning. 
+Llamada telefónica:
+El 28 de enero, Alba, la asesora familiar, mantuvo una conversación telefónica con Laura. Laura explicó con más detalle la situación de su madre, que presenta episodios frecuentes de desorientación y olvidos, lo que le impide desenvolverse con seguridad. Analizaron diferentes opciones de apoyo para que Carmen pueda permanecer en su hogar de forma segura, sin que suponga una sobrecarga excesiva para Laura. Alba le propuso un servicio de cuidadora a domicilio que se adaptaría bien a sus necesidades. Laura lo vio como una buena solución y le pidió que le preparara una propuesta concreta para valorarla al día siguiente.
 
-Económicamente, la situación es estable gracias a la pensión de Carmen, por lo que la familia está abierta a recibir un servicio de cuidados a domicilio con posibilidad de ampliación.
-
-Tras varias conversaciones entre Laura y la asesora Alba, se establece que el objetivo es proporcionar a Carmen compañía continua, supervisión para evitar caídas y apoyo en higiene. Se busca una cuidadora con experiencia en demencia, paciencia y trato cálido que pueda cocinarle platos sencillos.
+Whatsapp:
+El 22 de enero, Laura se puso en contacto con Alba por Whatsapp, preocupada por la situación de su madre. Laura le contó que cada vez se olvida de más cosas y que ese día había salido a la calle sin abrigo. Alba le indicó que hablaran al día siguiente por la mañana con más calma para encontrar la mejor solución.
 
 Timeline:
-- 12/01/2026: Primeras valoraciones sobre la situación de Carmen y sus necesidades.
-- 17/01/2026: Análisis de la situación económica de la familia.
-- 28/01/2026: Llamada entre Alba y Laura para explicar las opciones de servicio.
-- 05/02/2026: Conversaciones por WhatsApp para concretar los detalles del servicio y comenzar en 48-72 horas.
-
-Tras este proceso, se activará un servicio de cuidados a domicilio adaptado a las necesidades de Carmen, con el objetivo de mantener su rutina, evitar riesgos y dar apoyo a Laura.
+- 18 de enero: Laura acude a la oficina preocupada por el estado de salud de su madre Carmen.
+- 22 de enero: Laura contacta con Alba por Whatsapp para hablar de la situación de su madre.
+- 28 de enero: Alba y Laura mantienen una llamada telefónica para analizar las opciones de apoyo para Carmen.

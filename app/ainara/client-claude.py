@@ -25,7 +25,7 @@ logging.getLogger('pymongo').setLevel(logging.WARNING)
 # --- CONFIGURACIÓN ---
 PATH_PYTHON = "venv/bin/python" # Asegúrate de que este path sea correcto
 PATH_SERVER = "server.py"
-ANTHROPIC_API_KEY =""
+ANTHROPIC_API_KEY =os.getenv("ANTHROPIC_API_KEY", "")
 
 if not ANTHROPIC_API_KEY:
     raise ValueError("ANTHROPIC_API_KEY is not set")
