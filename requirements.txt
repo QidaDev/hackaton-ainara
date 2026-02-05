@@ -2,3 +2,5 @@ flask==3.1.2
 pydantic>=2.0.0
 pymongo==4.16.0
 Flask-Cors==6.0.0
+anthropic==0.45.0
+mcp==1.22.0

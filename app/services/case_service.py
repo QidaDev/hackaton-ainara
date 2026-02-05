@@ -6,7 +6,7 @@ from app.db_connection import db
 from app.models.calls import Call
 from app.models.message import Message
 from app.models.notes import Note
-
+from app.ainara.summary_client import SummaryClient
 
 def _to_json_safe(doc):
     """Convert a MongoDB doc to a JSON-serializable dict (ObjectId -> str)."""
@@ -40,7 +40,7 @@ def save_call(data: dict):
 
 def get_calls_by_case_id(case_id: str):
     """Return list of calls for the given case_id (JSON-safe dicts), newest first."""
-    cursor = db["calls"].find({"case_id": case_id}).sort("date", -1)
+    cursor = db["phone_call_transcriptions"].find({"case_id": case_id}).sort("date", -1)
     return [_to_json_safe(doc) for doc in cursor]
 
 
@@ -53,5 +53,16 @@ def save_message(data: dict):
 
 def get_messages_by_case_id(case_id: str):
     """Return list of WhatsApp messages for the given case_id (JSON-safe dicts), newest first."""
-    cursor = db["whatsapp_chats"].find({"case_id": case_id}).sort("date", -1)
+    cursor = db["whatsapp_messages"].find({"case_id": case_id}).sort("date", -1)
     return [_to_json_safe(doc) for doc in cursor]
+
+
+def get_summary_by_case_id(case_id: str) -> str:
+    """
+    Genera el resumen del caso vía Claude + MCP (modo a petición).
+    Invocado desde el endpoint POST /api/summary.
+    Lanza excepción si falla la conexión MCP o la API de Claude.
+    """
+    summary_client = SummaryClient()
+    summary = summary_client.generate_summary(case_id)
+    return summary

@@ -25,7 +25,7 @@ def create_app(test_config=None):
     
     import app.db_connection as db_connection
     db_client = get_db(Config.mongo_connection_string)
-    db_connection.db = db_client["hackaton"]
+    db_connection.db = db_client["ainara-db"]
 
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)

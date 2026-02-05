@@ -1,9 +1,15 @@
-from flask import Blueprint, jsonify, request
+import json
+from pathlib import Path
+
+from flask import Blueprint, Response, jsonify, request
+
+SUMMARY_DEBUG_FILE = Path(__file__).resolve().parent.parent / "summary_debug.txt"
 
 from app.services.case_service import (
     get_calls_by_case_id,
     get_messages_by_case_id,
     get_notes_by_case_id,
+    get_summary_by_case_id,
     save_call,
     save_message,
     save_note,
@@ -73,3 +79,20 @@ def get_whatsapp_chats():
     if not whatsapp_chats:
         return "", 204
     return jsonify(whatsapp_chats), 200
+
+@api_bp.route("/summary", methods=["GET"])
+def get_summary():
+    case_id = request.args.get("case_id")
+    if not case_id:
+        return jsonify({"error": "case_id is required"}), 400
+    summary = get_summary_by_case_id(case_id)
+    try:
+        SUMMARY_DEBUG_FILE.write_text(summary or "", encoding="utf-8")
+    except OSError:
+        pass
+    payload = {"summary": summary}
+    return Response(
+        json.dumps(payload, ensure_ascii=False),
+        mimetype="application/json; charset=utf-8",
+        status=200,
+    )
