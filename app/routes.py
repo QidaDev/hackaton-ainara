@@ -32,6 +32,8 @@ def get_notes():
     if not case_id:
         return jsonify({"error": "case_id is required"}), 400
     notes = get_notes_by_case_id(case_id)
+    if not notes:
+        return "", 204
     return jsonify(notes), 200
 
 
@@ -49,6 +51,8 @@ def get_calls():
     if not case_id:
         return jsonify({"error": "case_id is required"}), 400
     calls = get_calls_by_case_id(case_id)
+    if not calls:
+        return "", 204
     return jsonify(calls), 200
 
 @api_bp.route("/whatsapp-chats", methods=["POST"])
@@ -66,4 +70,6 @@ def get_whatsapp_chats():
     if not case_id:
         return jsonify({"error": "case_id is required"}), 400
     whatsapp_chats = get_messages_by_case_id(case_id)
+    if not whatsapp_chats:
+        return "", 204
     return jsonify(whatsapp_chats), 200
