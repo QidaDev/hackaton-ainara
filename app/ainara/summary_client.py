@@ -7,6 +7,7 @@ Usado desde el endpoint POST /api/summary y desde la CLI (client-claude.py).
 import asyncio
 import logging
 import os
+import re
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -21,7 +22,7 @@ logger.setLevel(logging.INFO)
 logging.getLogger("anthropic").setLevel(logging.WARNING)
 logging.getLogger("pymongo").setLevel(logging.WARNING)
 
-MODEL_ID = "claude-3-haiku-20240307"
+MODEL_ID = "claude-sonnet-4-20250514"
 
 
 class SummaryClient:
@@ -64,62 +65,58 @@ class SummaryClient:
         })
         return anthropic_tools
 
+    @staticmethod
+    def _strip_html_xml(raw: str) -> str:
+        """Remove HTML/XML tags from model output to avoid structured leakage."""
+        if not raw or not raw.strip():
+            return raw
+        return re.sub(r"<[^>]+>", "", raw).strip()
+
     def _get_system_instruction(self, mcp_resources):
         text = (
-            "Eres un asistente de IA que genera un resumen de un caso de la familia a través de consultas a un servidor MCP.\n"
-            "Tienes acceso a las siguientes herramientas y recursos.\n\n"
-            "No añadas ningun tipo de tag html ni xml en el resumen."
-        )
+            "Eres un motor de extracción y resumen de datos estrictamente basado en hechos. NO eres un asistente creativo.\n"
+            "Tu única función es transformar datos crudos JSON provenientes de la herramienta `generate_case_summary` en un resumen legible.\n\n"
+            "PROTOCOLOS DE SEGURIDAD CONTRA ALUCINACIONES:\n"
+            "1. CERO INVENCIÓN: Si la herramienta devuelve listas vacías, nulos o falta de información, NO inventes nombres, ni fechas, ni situaciones (ej. no inventes 'Sra. Carmen', ni 'hija Laura'). Si no hay datos, no escribes nada sobre eso."
+            "2. VERIFICACIÓN DE VACÍO: Si la respuesta de la herramienta indica que no hay notas, ni llamadas, ni mensajes, tu ÚNICA respuesta debe ser: \"El caso no existe.. En el caso de existir, no incluyas ninguna verificacion de que el caso existe."
+            "3. FUENTE ÚNICA: Solo existe lo que está en el JSON de retorno. Si el JSON no menciona una enfermedad, la persona está sana. Si no menciona familiares, la persona vive sola."
+            "Reglas de formato: Texto plano, sin markdown complejo, sin meta-comentarios."
+)
         for res in mcp_resources.resources:
             text += f"- {res.name}: {res.uri}\n"
         return text
 
     def _get_case_summary_prompt(self, case_id: str) -> str:
         return (
-            f"""
-                    Instrucciones:
-                    Genera un resumen integral del caso con case_id = {case_id}, siguiendo estrictamente los pasos y reglas indicadas. No añadas explicaciones, introducciones ni comentarios finales.     Devuelve únicamente el resumen solicitado, en español.
+            
+                f"""
+                case_id to use (mandatory): {case_id}
+                You must call the generate_case_summary tool exactly with this case_id: "{case_id}".
 
-                    Pasos a seguir:
+                CRITICAL INSTRUCTION - DATA VALIDATION:
+                Upon receiving the tool output, you must perform a check BEFORE writing any summary:
+                1. Look at the content of 'notes', 'whatsapp', and 'transcriptions'.
+                2. If ALL of them are empty, null, or contain no substantive text, you must output exactly: "El caso no existe." and stop immediately.
+                3. DO NOT fabricate a default case (e.g., do not invent a "Sra. Carmen" or "Laura").
+                4. Only proceed to the summary if actual text data is returned.
 
-                    1. Recuperación de datos desde MongoDB:
-                       - Descarga todas las notas asociadas al case_id y utiliza únicamente su campo text.
-                       - Descarga todas las conversaciones de WhatsApp asociadas al case_id y utiliza únicamente su campo   text.
-                       - Descarga todas las transcripciones de llamadas asociadas al case_id y utiliza únicamente su campo  text.
+                If data exists, follow these instructions for the summary:
+                - **Focus exclusively on the person (the subject of care). Do not mention the advisor (asesora).**
+                - Base the summary ONLY on the text returned by the tool.
+                - Remove redundant information.
+                - Maintain temporal coherence (oldest to newest).
+                - Timeline: Include dates of relevant notes and phone calls (with brief descriptions) at the end. Order chronologically (DD/MM/YYYY).
 
-                    2. Comprobación de existencia del caso:
-                       - Si no se recupera ningún dato (ni notas, ni conversaciones, ni transcripciones), devuelve  únicamente:
-                         "El caso no existe."
-                         y no añadas nada más.
+                Format:
+                - Max 1000 words.
+                - Spanish language only.
+                - Plain text (no HTML/XML).
+                - Do not include meta-comments like "Here is the summary".
 
-                    3. Proceso de resumen:
-                       - Resume por separado:
-                         a) El contenido completo de las notas.
-                         b) El contenido completo de las conversaciones de WhatsApp.
-                         c) El contenido completo de las transcripciones de llamadas.
-                       - Unifica los tres resúmenes eliminando información redundante.
-                       - Mantén coherencia temporal, ordenando la narración desde lo más antiguo a lo más reciente.
-                       - Descarta lo obvio y prioriza siempre la información significativa.
-
-                    4. Timeline:
-                       - Dentro del resumen final, incluye una timeline breve que recoja únicamente:
-                         - Las fechas de notas con contenido relevante.
-                         - Las fechas de llamadas telefónicas y una breve descripcion de la llamada. Si la llamada tiene una fecha que hace que se intercale con otros eventos de la timeline, incluye la llamada y su descripcion antes de ese evento.
-                       - Mantén el orden cronológico estrictamente.
-
-                    5. Extensión y formato:
-                       - El resumen completo no debe superar 1000 palabras.
-                       - Mantén estructura clara y consistente en cada ejecución.
-                       - Texto final únicamente en español.
-
-                    Salida esperada:
-                    Un único bloque de texto que contenga:
-                    - El resumen combinado.
-                    - La timeline integrada.
-
-                    No añadas nada más fuera de este contenido.
-                    Si no encuentras datos en alguna de las colecciones, como notas o conversaciones chat, no lo incluyas en el resumen. No incluyas nunca tags HTML ni XML
-                    """
+                Output Structure:
+                [Summary Content]
+                [Timeline]
+"""
         )
 
     async def _run_single_turn(
@@ -171,7 +168,8 @@ class SummaryClient:
                     }],
                 })
 
-        return "\n".join(final_text_parts).strip() if final_text_parts else ""
+        raw = "\n".join(final_text_parts).strip() if final_text_parts else ""
+        return self._strip_html_xml(raw) if raw else ""
 
     async def generate_summary_async(self, case_id: str) -> str:
         """
@@ -198,7 +196,7 @@ class SummaryClient:
                     claude_tools,
                     system_prompt,
                     user_prompt,
-                )
+                )                           
 
     def generate_summary(self, case_id: str) -> str:
         """

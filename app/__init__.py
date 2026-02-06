@@ -25,7 +25,11 @@ def create_app(test_config=None):
     
     import app.db_connection as db_connection
     db_client = get_db(Config.mongo_connection_string)
-    db_connection.db = db_client["ainara-db"]
+    db_connection.db = db_client[Config.mongo_database_name]
+
+    # So MCP subprocess uses the same datasource when SummaryClient spawns it
+    os.environ["MONGO_CONNECTION_STRING"] = Config.mongo_connection_string
+    os.environ["MONGO_DATABASE_NAME"] = Config.mongo_database_name
 
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)

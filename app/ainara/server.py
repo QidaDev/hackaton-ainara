@@ -1,18 +1,25 @@
-from mcp.server.fastmcp import FastMCP
-
-from bson import json_util
 from pathlib import Path
 import logging
-from typing import List, Dict, Any
+import os
+from typing import Any, Dict, List, Tuple
 
+from dotenv import load_dotenv
+from mcp.server.fastmcp import FastMCP
 from pymongo import MongoClient
 
-# 1. Conexión (usando las credenciales de tu Docker)
-client = MongoClient[Any]("mongodb://admin:secretpassword@mongodb:27017/")
-db = client['ainara-db']
-notes_collection = db['notes']
-whatsapp_messages_collection = db['whatsapp_messages']
-phone_call_transcriptions_collection = db['phone_call_transcriptions']
+load_dotenv()
+
+# 1. Conexión unificada con app (misma config: config.py / MONGO_* env vars)
+_mongo_uri = os.environ.get(
+    "MONGO_CONNECTION_STRING",
+    "mongodb://admin:secretpassword@mongodb:27017/",
+)
+_mongo_db = os.environ.get("MONGO_DATABASE_NAME", "ainara-db")
+client = MongoClient[Any](_mongo_uri)
+db = client[_mongo_db]
+notes_collection = db["notes"]
+whatsapp_messages_collection = db["whatsapp_messages"]
+phone_call_transcriptions_collection = db["phone_call_transcriptions"]
 
 
 # Configure logging for the server
@@ -84,23 +91,34 @@ def generate_case_summary(case_id: str) -> str:
         notes_string: str = ""
         whatsapp_messages_string: str = ""
         phone_call_transcriptions_string: str = ""
-    
+
+        def _text_and_date(doc: Dict[str, Any]) -> Tuple[str, str]:
+            """Extract text and date from a MongoDB document for clean summary input."""
+            text = (doc.get("text") or "").strip()
+            date = (doc.get("date") or "").strip()
+            return (text, date)
+
         string_return: str = ""
         logger.debug(f"🔍 NOTES LIST: {repr(notes_list)} (type: {type(notes_list)})")
         logger.debug(f"🔍 WHATSAPP MESSAGES LIST: {repr(whatsapp_messages_list)} (type: {type(whatsapp_messages_list)})")
         logger.debug(f"🔍 PHONE CALL TRANSCRIPTIONS LIST: {repr(phone_call_transcriptions_list)} (type: {type(phone_call_transcriptions_list)})")
-        
+
         for note in notes_list:
-            # string_list.append(str(note))
-            string_return += "Nota: " + str(note) + "\n"
+            text, date = _text_and_date(note)
+            string_return += "Nota:\nFecha: " + date + "\nTexto: " + text + "\n\n"
             logger.debug(f"🔍 NOTES: string_return: {repr(string_return)})")
         for whatsapp_message in whatsapp_messages_list:
-            # string_list.append(str(whatsapp_message))
-            string_return += "Whatsapp Message: " + str(whatsapp_message) + "\n"
+            text, date = _text_and_date(whatsapp_message)
+            string_return += "Mensaje WhatsApp:\nFecha: " + date + "\nTexto: " + text + "\n\n"
             logger.debug(f"🔍 WHATSAPP MESSAGES: string_return: {repr(string_return)})")
         for phone_call_transcription in phone_call_transcriptions_list:
-            # string_list.append(str(phone_call_transcription))
-            string_return += "Phone Call Transcription: " + str(phone_call_transcription) + "\n"
+            text, date = _text_and_date(phone_call_transcription)
+            conv_init = (phone_call_transcription.get("conversation_init") or "").strip()
+            conv_end = (phone_call_transcription.get("conversation_end") or "").strip()
+            string_return += "Transcripción de llamada:\nFecha: " + date
+            if conv_init or conv_end:
+                string_return += "\nInicio llamada: " + conv_init + "\nFin llamada: " + conv_end
+            string_return += "\nTexto: " + text + "\n\n"
             logger.debug(f"🔍 PHONE CALL TRANSCRIPTIONS: string_return: {repr(string_return)})")
 
         logger.debug(f"🔍 string_return: {repr(string_return)} (type: {type(string_return)})")
